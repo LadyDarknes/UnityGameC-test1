@@ -3,7 +3,6 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    public float waterGravity = 0.1f;
 
     private Vector2 moveDirection;
     private Rigidbody2D rb;
@@ -15,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        rb.gravityScale = 0; // Suyun altında olduğumuz için gravity scale'i sıfırlıyoruz.
+        rb.gravityScale = 0; 
     }
 
     void Update()
@@ -39,11 +38,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        // Karakterin hareket etmesi ve suyun altında yavaşça aşağı düşmesi
-        Vector2 newVelocity = new Vector2(moveDirection.x * moveSpeed, moveDirection.y * moveSpeed - waterGravity);
+        Vector2 newVelocity = moveDirection * moveSpeed;
         rb.velocity = newVelocity;
 
-        // Karakterin yönünü ayarlamak (sola veya sağa bakması için)
         if (moveDirection.x != 0)
         {
             transform.localScale = new Vector3(Mathf.Sign(moveDirection.x), 1, 1);

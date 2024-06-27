@@ -3,9 +3,9 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    public Vector2 moveDirection;
     public float waterGravity = 0.1f;
 
+    private Vector2 moveDirection;
     private Rigidbody2D rb;
     private Animator animator;
     private float idleTime = 0f;
@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y - waterGravity);
 
         if (moveDirection.x != 0)
         {

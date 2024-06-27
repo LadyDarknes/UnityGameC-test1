@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    public Transform firePoint; // Ateş etme noktası
 
     private Vector2 moveDirection;
     private Rigidbody2D rb;
@@ -44,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
         if (moveDirection.x != 0)
         {
             transform.localScale = new Vector3(Mathf.Sign(moveDirection.x), 1, 1);
+            firePoint.localRotation = Quaternion.Euler(0, Mathf.Sign(moveDirection.x) == 1 ? 0 : 180, 0); // Fire point'i döndür
         }
     }
 

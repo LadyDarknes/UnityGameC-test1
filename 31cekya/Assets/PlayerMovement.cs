@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        rb.gravityScale = waterGravity;
+        rb.gravityScale = 0; // Suyun altında olduğumuz için gravity scale'i sıfırlıyoruz.
     }
 
     void Update()
@@ -39,8 +39,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y - waterGravity);
+        // Karakterin hareket etmesi ve suyun altında yavaşça aşağı düşmesi
+        Vector2 newVelocity = new Vector2(moveDirection.x * moveSpeed, moveDirection.y * moveSpeed - waterGravity);
+        rb.velocity = newVelocity;
 
+        // Karakterin yönünü ayarlamak (sola veya sağa bakması için)
         if (moveDirection.x != 0)
         {
             transform.localScale = new Vector3(Mathf.Sign(moveDirection.x), 1, 1);

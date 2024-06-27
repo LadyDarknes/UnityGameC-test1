@@ -4,17 +4,24 @@ public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
     public Vector2 moveDirection;
-    
+    public float waterGravity = 0.1f;
+
     private Rigidbody2D rb;
+    private Animator animator;
+    private float idleTime = 0f;
+    private float idleThreshold = 5f;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        rb.gravityScale = waterGravity;
     }
 
     void Update()
     {
         ProcessInputs();
+        UpdateAnimations();
     }
 
     void FixedUpdate()
@@ -32,6 +39,31 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        rb.velocity = new Vector2(moveDirection.x * moveSpeed, moveDirection.y * moveSpeed);
+        rb.velocity = new Vector2(moveDirection.x * moveSpeed, rb.velocity.y);
+
+        if (moveDirection.x != 0)
+        {
+            transform.localScale = new Vector3(Mathf.Sign(moveDirection.x), 1, 1);
+        }
+    }
+
+    void UpdateAnimations()
+    {
+        if (moveDirection.x != 0 || moveDirection.y != 0)
+        {
+            animator.SetBool("isWalking", true);
+            idleTime = 0f;
+        }
+        else
+        {
+            animator.SetBool("isWalking", false);
+            idleTime += Time.deltaTime;
+
+            if (idleTime > idleThreshold)
+            {
+                animator.SetTrigger("Idle2");
+                idleTime = 0f;
+            }
+        }
     }
 }

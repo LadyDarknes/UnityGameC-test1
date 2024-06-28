@@ -1,17 +1,21 @@
 using UnityEngine;
-using System.Collections; // IEnumerator için gerekli
+using System.Collections;
+using System.Linq; // Linq kullanarak en yakın düşmanı bulmak için
 
 public class PlayerShooting : MonoBehaviour
 {
-    public GameObject bulletPrefab; 
+    public GameObject bulletPrefab;
     public Transform firePoint;
     public float bulletSpeed = 20f;
     public int maxAmmo = 10;
     public float reloadTime = 2f;
+    public float fireRate = 1f;
+    public float detectionRadius = 10f;
 
     private Animator animator;
     private int currentAmmo;
     private bool isReloading = false;
+    private float nextFireTime = 0f;
 
     void Start()
     {
@@ -26,56 +30,54 @@ public class PlayerShooting : MonoBehaviour
         if (isReloading)
             return;
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Time.time >= nextFireTime)
+        {
+            Enemy target = GetNearestEnemy();
+            if (target != null && !target.isDead)
+            {
+                Shoot(target);
+                nextFireTime = Time.time + 1f / fireRate;
+            }
+        }
+
+        if (currentAmmo <= 0)
         {
             StartCoroutine(Reload());
             return;
         }
 
-        if (currentAmmo <= 0)
-        {
-            return;
-        }
-
-        if (Input.GetButtonDown("Fire1")) 
-        {
-            StartCoroutine(Shoot());
-        }
-
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Cursor.lockState = CursorLockMode.None; 
-            Cursor.visible = true; 
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            Cursor.lockState = CursorLockMode.Locked; 
-            Cursor.visible = false; 
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 
-    IEnumerator Shoot()
+    void Shoot(Enemy target)
     {
         animator.SetBool("isShooting", true);
-
-        currentAmmo--; 
+        currentAmmo--;
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.velocity = firePoint.right * bulletSpeed;
+        Vector2 direction = (target.transform.position - firePoint.position).normalized;
+        rb.velocity = direction * bulletSpeed;
 
-       
         Destroy(bullet, 2.0f);
 
-        yield return new WaitForSeconds(0.1f); 
-        animator.SetBool("isShooting", false); 
+        animator.SetBool("isShooting", false);
     }
 
     IEnumerator Reload()
     {
         isReloading = true;
-        animator.SetBool("isReloading", true); 
+        animator.SetBool("isReloading", true);
 
         yield return new WaitForSeconds(reloadTime);
 
@@ -87,5 +89,28 @@ public class PlayerShooting : MonoBehaviour
     void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 150, 20), "Ammo: " + currentAmmo + "/" + maxAmmo);
+    }
+
+    Enemy GetNearestEnemy()
+    {
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
+        Enemy nearestEnemy = null;
+        float minDistance = float.MaxValue;
+
+        foreach (var hitCollider in hitColliders)
+        {
+            Enemy enemy = hitCollider.GetComponent<Enemy>();
+            if (enemy != null && !enemy.isDead)
+            {
+                float distance = Vector2.Distance(transform.position, enemy.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestEnemy = enemy;
+                }
+            }
+        }
+
+        return nearestEnemy;
     }
 }

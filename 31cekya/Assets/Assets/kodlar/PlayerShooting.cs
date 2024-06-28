@@ -3,11 +3,11 @@ using System.Collections; // IEnumerator için gerekli
 
 public class PlayerShooting : MonoBehaviour
 {
-    public GameObject bulletPrefab; // Mermi prefab'ı
-    public Transform firePoint; // Ateş etme noktası
-    public float bulletSpeed = 20f; // Mermi hızı
-    public int maxAmmo = 10; // Maksimum mermi sayısı
-    public float reloadTime = 2f; // Yeniden yükleme süresi
+    public GameObject bulletPrefab; 
+    public Transform firePoint;
+    public float bulletSpeed = 20f;
+    public int maxAmmo = 10;
+    public float reloadTime = 2f;
 
     private Animator animator;
     private int currentAmmo;
@@ -16,9 +16,9 @@ public class PlayerShooting : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        currentAmmo = maxAmmo; // Başlangıçta tam dolu şarjör
-        Cursor.lockState = CursorLockMode.Locked; // Fare imlecini kilitle
-        Cursor.visible = false; // Fare imlecini gizle
+        currentAmmo = maxAmmo;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -37,42 +37,45 @@ public class PlayerShooting : MonoBehaviour
             return;
         }
 
-        if (Input.GetButtonDown("Fire1")) // Fire1 varsayılan olarak sol fare tuşudur
+        if (Input.GetButtonDown("Fire1")) 
         {
-            Shoot();
+            StartCoroutine(Shoot());
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Cursor.lockState = CursorLockMode.None; // Fare imlecini serbest bırak
-            Cursor.visible = true; // Fare imlecini göster
+            Cursor.lockState = CursorLockMode.None; 
+            Cursor.visible = true; 
         }
 
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            Cursor.lockState = CursorLockMode.Locked; // Fare imlecini tekrar kilitle
-            Cursor.visible = false; // Fare imlecini tekrar gizle
+            Cursor.lockState = CursorLockMode.Locked; 
+            Cursor.visible = false; 
         }
     }
 
-    void Shoot()
+    IEnumerator Shoot()
     {
-        animator.SetTrigger("isShooting"); // Ateş etme animasyonunu tetikle
+        animator.SetBool("isShooting", true);
 
-        currentAmmo--; // Mermi sayısını azalt
+        currentAmmo--; 
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.velocity = firePoint.right * bulletSpeed; // Mermiye hız ver
+        rb.velocity = firePoint.right * bulletSpeed;
 
-        // Mermiyi belirli bir süre sonra yok et (isteğe bağlı)
+       
         Destroy(bullet, 2.0f);
+
+        yield return new WaitForSeconds(0.1f); 
+        animator.SetBool("isShooting", false); 
     }
 
     IEnumerator Reload()
     {
         isReloading = true;
-        animator.SetBool("isReloading", true); // Yeniden yükleme animasyonunu tetikle
+        animator.SetBool("isReloading", true); 
 
         yield return new WaitForSeconds(reloadTime);
 

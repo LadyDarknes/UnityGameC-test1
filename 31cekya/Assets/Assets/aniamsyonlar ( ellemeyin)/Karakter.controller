@@ -589,6 +589,12 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 5424020791062938801}
     m_Position: {x: 390, y: -100, z: 0}
+<<<<<<< HEAD
+=======
+  - serializedVersion: 1
+    m_State: {fileID: 7941600483059078032}
+    m_Position: {x: 310, y: 370, z: 0}
+>>>>>>> parent of f934a25 (123)
   - serializedVersion: 1
     m_State: {fileID: 3667848041231282984}
     m_Position: {x: 80, y: 340, z: 0}

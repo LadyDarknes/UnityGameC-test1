@@ -39,8 +39,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        Vector2 newVelocity = moveDirection * moveSpeed;
-        rb.velocity = newVelocity;
+        Vector2 targetPosition = rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime;
+        rb.MovePosition(targetPosition);
 
         if (moveDirection.x != 0)
         {

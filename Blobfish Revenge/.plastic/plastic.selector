@@ -1,0 +1,4 @@
+repository "Blobfish Revenge@SiksenYapamayizamk@cloud"
+  path "/"
+    br "/main"
+    co "/main"
